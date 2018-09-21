@@ -16,3 +16,4 @@ def sinc_derivative(x):
 	
 print (sinc_derivative(3))
 
+ 
