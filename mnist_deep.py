@@ -15,11 +15,11 @@ def load_data():
 	(x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 	# preprocess data, let pixel between 0~1
-	x_train = x_train.reshape(x_train.shape[0], img_size*img_size)
-	x_train = x_train.astype('float32')/255
+	x_train = x_train.reshape((x_train.shape[0], img_size * img_size))
+	x_train = x_train.astype('float32') / 255.
 
-	x_test = x_test.reshape(x_test.shape[0], img_size*img_size)
-	x_test = x_test.astype('float32')/255
+	x_test = x_test.reshape((x_test.shape[0], img_size * img_size))
+	x_test = x_test.astype('float32') / 255.
 
 	y_train = np_utils.to_categorical(y_train, num_classes)
 	y_test = np_utils.to_categorical(y_test, num_classes)
@@ -31,13 +31,14 @@ if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
 
 	model = Sequential()
-	model.add(Dense(32, input_dim=784))
-	for i in range(10):
-		model.add(Activation('relu'))
-		model.add(Dense(10))
-	model.compile(loss='mean_squared_error', optimizer='adam',metrics=['accuracy'])
+	model.add(Dense(2, input_dim = 784))
+	for i in range(3):
+		model.add(Dense(10,activation='relu'))
+	model.add(Dense(10))
+	model.add(Activation('softmax'))
+	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
 	model.summary()
-	history = model.fit(x_train, y_train, nb_epoch=10, validation_split=0.2, shuffle=True)
+	history = model.fit(x_train, y_train, nb_epoch = 100, validation_split = 0.2, shuffle = True)
 
 	# output score
 	score = model.evaluate(x_train,y_train)
@@ -51,7 +52,7 @@ if __name__ == '__main__':
 	plt.ylabel('accuracy')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.show()
+	# plt.show()
 
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
@@ -59,4 +60,4 @@ if __name__ == '__main__':
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.show()
+	# plt.show()
