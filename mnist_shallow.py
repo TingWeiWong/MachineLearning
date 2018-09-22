@@ -31,7 +31,7 @@ if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
 
 	model = Sequential()
-	model.add(Dense(2, input_dim = 784))
+	model.add(Dense(8, input_dim = 784))
 	model.add(Dense(30,activation='relu'))
 	model.add(Dense(10))
 	model.add(Activation('softmax'))
