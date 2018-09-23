@@ -1,3 +1,12 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from keras.models import Sequential
+from keras.layers.core import Dense, Activation, Dropout
+from keras.optimizers import SGD, Adam, RMSprop
+from sklearn.preprocessing import *
+from sklearn.cross_validation import *
+from sklearn.metrics import *
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
@@ -29,34 +38,20 @@ def load_data():
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
-
+	n_hidden = 2	
+	# Build a simple neural network.
 	model = Sequential()
-	model.add(Dense(2, input_dim = 784))
-	model.add(Dense(100,activation='relu'))
-	model.add(Dense(10))
+	model.add(Dense(input_dim = x_train.shape[1], output_dim = n_hidden))
+	model.add(Activation('relu'))
+	model.add(Dense(362))
+	model.add(Activation('relu'))
+	model.add(Dense(output_dim = 10))
 	model.add(Activation('softmax'))
-	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
+	sgd = SGD(lr=0.2, decay=1e-7, momentum=0.1, nesterov=True)
+	model.compile(loss='categorical_crossentropy', optimizer='sgd',metrics=['accuracy'])
 	model.summary()
-	history = model.fit(x_train, y_train, nb_epoch = 100, validation_split = 0.2, shuffle = True)
-
-	# output score
+	model.fit(x_train, y_train, epochs = 10, batch_size = 10, verbose = 1, validation_split = 0.05)
 	score = model.evaluate(x_train,y_train)
-	print('\nTrain Acc:', score[1])
+	print('\nTrain Acc for:',(n_hidden),"layers", score[1])
 	score = model.evaluate(x_test,y_test)
 	print('\nTest Acc:', score[1])
-	
-	plt.plot(history.history['acc'])
-	plt.plot(history.history['val_acc'])
-	plt.title('model accuracy')
-	plt.ylabel('accuracy')
-	plt.xlabel('epoch')
-	plt.legend(['train', 'test'], loc='upper left')
-	# plt.show()
-
-	plt.plot(history.history['loss'])
-	plt.plot(history.history['val_loss'])
-	plt.title('model loss')
-	plt.ylabel('loss')
-	plt.xlabel('epoch')
-	plt.legend(['train', 'test'], loc='upper left')
-	# plt.show()
