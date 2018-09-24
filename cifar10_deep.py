@@ -38,7 +38,7 @@ if __name__ == '__main__':
 	model.add(Activation('softmax'))
 	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
 	model.summary()
-	history = model.fit(x_train, y_train, nb_epoch = 100, validation_split = 0.2, shuffle = True)
+	history = model.fit(x_train, y_train, nb_epoch = 20000, validation_split = 0.2, shuffle = True)
 
 	# output score
 	score = model.evaluate(x_train,y_train)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 	plt.ylabel('accuracy')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	# plt.show()
+	plt.show()
 
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
@@ -60,4 +60,4 @@ if __name__ == '__main__':
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	# plt.show()
+	plt.show()
