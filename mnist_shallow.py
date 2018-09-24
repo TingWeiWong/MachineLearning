@@ -31,8 +31,8 @@ if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
 
 	model = Sequential()
-	model.add(Dense(2, input_dim = 784))
-	model.add(Dense(100,activation='relu'))
+	model.add(Dense(32, input_dim = 784))
+	model.add(Dense(50,activation='relu'))
 	model.add(Dense(10))
 	model.add(Activation('softmax'))
 	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	plt.ylabel('accuracy')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	# plt.show()
+	plt.show()
 
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
@@ -59,4 +59,4 @@ if __name__ == '__main__':
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	# plt.show()
+	plt.show()

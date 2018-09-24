@@ -11,3 +11,8 @@ import torch.optim as optim
 # Single input output non-linear function to approximate
 def function(x):
 	return np.sinc(x)
+
+def setupDataset():
+	#Using Pandas columns 
+	data = []
+	
