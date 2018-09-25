@@ -33,7 +33,7 @@ if __name__ == '__main__':
 	model = Sequential()
 	model.add(Dense(32, input_dim = 3072))
 	for i in range(3):
-		model.add(Dense(10,activation='relu'))
+		model.add(Dense(10,activation='tanh'))
 	model.add(Dense(10))
 	model.add(Activation('softmax'))
 	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
