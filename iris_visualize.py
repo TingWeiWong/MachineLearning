@@ -5,11 +5,9 @@ from sklearn import datasets
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris
 k = 3
-X = torch.from_numpy(iris.data)
-X_mean = torch.mean(X,0)
-X = X - X_mean.expand_as(X)
-U,S,V = torch.svd(torch.t(X))
-C = torch.mm(X,U[:,:k])
+iris = datasets.load_iris()
+X = iris.data[:, :2]
+y = iris.target
 def PCA(data, k=2):
 	# preprocess the data
 	X = torch.from_numpy(data)
@@ -19,12 +17,7 @@ def PCA(data, k=2):
 	# svd
 	U,S,V = torch.svd(torch.t(X))
 	return torch.mm(X,U[:,:k])
-	iris = datasets.load_iris()
-
-	X = iris.data
-	y = iris.target
-	X_PCA = my_PCA(X)
-
+X_PCA = PCA(X)
 plt.figure()
 
 for i, target_name in enumerate(iris.target_names):
