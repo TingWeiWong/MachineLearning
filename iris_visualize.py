@@ -8,7 +8,7 @@ k = 3
 iris = datasets.load_iris()
 X = iris.data[:, :2]
 y = iris.target
-def PCA(data, k=2):
+def PCA(data, k=3):
 	# preprocess the data
 	X = torch.from_numpy(data)
 	X_mean = torch.mean(X,0)
