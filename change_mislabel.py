@@ -29,7 +29,7 @@ def load_data():
 
 if __name__ == '__main__':
 	historys=[]
-	for i in range(2):
+	for i in range(3):
 		x_train, y_train, x_test, y_test = load_data()
 		for j in range(60000-30000*i):
 			y_train[j] = np.eye(10)[np.random.choice(10,1)][0]
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 		historys.append(history)
 		plt.plot(historys[i].history['acc'])
 		plt.plot(historys[i].history['val_acc'],"--")
-		plt.legend(['train1', 'test1','train2','test2'], loc='upper left')
+		plt.legend(['train100%', 'test100%','train50%','test50%','train0%','test0%'], loc='upper left')
 
 
 

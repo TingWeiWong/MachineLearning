@@ -5,7 +5,7 @@ from keras.optimizers import SGD, Adam
 from keras.utils import np_utils
 from keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
-
+import numpy as np
 num_classes = 10
 img_size = 28 # mnist size = 28*28
 
@@ -29,5 +29,5 @@ def load_data():
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
-	print (len(y_test))
-	print (len(y_train))
+	print ((len(y_train)))
+	print ((np.eye(10)[np.random.choice(10,1)][0]))
