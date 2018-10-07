@@ -34,7 +34,7 @@ if __name__ == '__main__':
 	for i in range(10000):
 		y_test[i] = np.eye(10)[np.random.choice(10,1)][0]
 
-	model = Sequential()
+	model = Sequential()r
 	model.add(Dense(32, input_dim = 784))
 	model.add(Dense(10,activation='relu'))
 	model.add(Dense(30,activation='tanh'))
