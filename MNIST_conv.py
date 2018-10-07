@@ -32,8 +32,8 @@ if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
 	for i in range(len(y_train)):
 		y_train[i] = np.eye(10)[np.random.choice(10,1)][0]
-	for i in range(len(y_test)):
-		y_test[i] = np.eye(10)[np.random.choice(10,1)][0]
+	# for i in range(len(y_test)):
+	# 	y_test[i] = np.eye(10)[np.random.choice(10,1)][0]
 
 	model = Sequential()
 	model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)))
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 	model.add(Dense(10, activation='softmax'))
 	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
 	model.summary()
-	history = model.fit(x_train, y_train, epochs = 100, validation_split = 0.2, shuffle = True)
+	history = model.fit(x_train, y_train, epochs = 10, validation_split = 0.2, shuffle = True)
 
 
 
