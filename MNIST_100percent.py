@@ -29,7 +29,7 @@ def load_data():
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
-	for i in range(60000):
+	for i in range(10000):
 		y_train[i] = np.eye(10)[np.random.choice(10,1)][0]
 	for j in range(10000):
 		y_test[j] = np.eye(10)[np.random.choice(10,1)][0]
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 	model.add(Activation('softmax'))
 	model.compile(loss = 'categorical_crossentropy', optimizer = 'sgd', metrics = ['accuracy'])
 	model.summary()
-	history = model.fit(x_train, y_train, epochs = 100, validation_split = 0.2, shuffle = False)
+	history = model.fit(x_train, y_train, epochs = 10, validation_split = 0.2, shuffle = False)
 
 
 
