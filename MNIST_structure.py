@@ -29,5 +29,5 @@ def load_data():
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
-	print ((len(y_train)))
-	print ((np.eye(10)[np.random.choice(10,1)][0]))
+	print (len(y_train))
+	print (len(y_test))

@@ -31,20 +31,25 @@ if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
 	for i in range(60000):
 		y_train[i] = np.eye(10)[np.random.choice(10,1)][0]
-	for i in range(10000):
-		y_test[i] = np.eye(10)[np.random.choice(10,1)][0]
+	for j in range(10000):
+		y_test[j] = np.eye(10)[np.random.choice(10,1)][0]
 
 	model = Sequential()
 	model.add(Dense(32, input_dim = 784))
-	model.add(Dense(10,activation='relu'))
-	model.add(Dense(30,activation='relu'))
+	model.add(Dense(300,activation='tanh'))
+	model.add(Dense(100,activation='sigmoid'))
+	model.add(Dense(100,activation='relu'))
+	model.add(Dense(100,activation='tanh'))
+	model.add(Dense(100,activation='sigmoid'))
+	model.add(Dense(100,activation='relu'))
+
 	model.add(Dense(30,activation='relu'))
 
 	model.add(Dense(10))
 	model.add(Activation('softmax'))
-	model.compile(loss = 'categorical_crossentropy', optimizer = 'rmsprop', metrics = ['accuracy'])
+	model.compile(loss = 'categorical_crossentropy', optimizer = 'sgd', metrics = ['accuracy'])
 	model.summary()
-	history = model.fit(x_train, y_train, nb_epoch = 100, validation_split = 0.2, shuffle = True)
+	history = model.fit(x_train, y_train, epochs = 100, validation_split = 0.2, shuffle = False)
 
 
 
