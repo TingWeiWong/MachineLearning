@@ -29,8 +29,8 @@ def load_data():
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = load_data()
-	# for i in range(60000):
-	# 	y_train[i] = np.eye(10)[np.random.choice(10,1)][0]
+	for i in range(60000):
+		y_train[i] = np.eye(10)[np.random.choice(10,1)][0]
 	for i in range(10000):
 		y_test[i] = np.eye(10)[np.random.choice(10,1)][0]
 
