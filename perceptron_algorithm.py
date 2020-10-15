@@ -33,9 +33,20 @@ def perceptron_main(x, y, weight, max_count):
 	"""
 	This function executes the main PLA algorithm
 	"""
-	
-	pass
+	time_step, counter = 0 
 
+	# Find random number between 0 and N-1
+	while counter < max_count:
+		random_number = randint(0,N-1)
+		counter += 1
+		# Find incorrect label
+		value = y[n] * np.dot(weight,x[n])
+		if value <= 0:
+			weight += y[n] * x[n] # Vector addition
+			time_step += 1
+			counter = 0 
+
+	return weight, time_step
 
 
 
