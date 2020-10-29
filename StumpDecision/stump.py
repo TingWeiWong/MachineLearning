@@ -5,6 +5,7 @@ import sys
 # Global Parameters
 data_set_size = 2
 tau = 0
+experiment_epoch = 100
 
 # Placeholders
 Eout_minus_Ein = []
@@ -51,6 +52,28 @@ def flipping(y_list, data_set_size, tau):
 
 	else:
 		sys.exit("tau not 0 nor 0.1 returning error")
+
+def find_Ein(data_set_size, tau):
+	"""
+	This function finds the Error for Ein
+	 Need to regenerate data for X_list every loop
+	- Input:
+	- Output:
+		* Ein: Ein for that specific experiment
+		* theta: s*sign(x-theta), the value for theta
+		* sign_value: s = +1 or -1
+	"""
+	x_Ein = numpy.random.uniform(-1.0,1.0,data_set_size)
+	x_Ein = numpy.sort(x_Ein) # O(nlogn)
+	threshold_list = [-1]
+	y_list = label_with_sign(x_Ein,data_set_size,tau)
+	y_list = flipping(y_list,data_set_size,tau)
+
+	# Append threshold list
+	for i in range(data_set_size-1):
+		mid_section = (x[i]+x[i+1])/2
+		threshold_list.append(mid_section)
+
 
 
 # x = [1,2,3,4,5,6,7]
