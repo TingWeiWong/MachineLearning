@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import sys
 
 # Global Parameters
 data_set_size = 2
@@ -31,11 +32,29 @@ def label_with_sign(x_list, data_set_size):
 	return output_list
 
 # Flipping Function
-def flipping(original_array, data_set_size, tau):
+def flipping(y_list, data_set_size, tau):
 	"""
 	This function flips the y label by tau probability independently
 	- Input:
-		* original_array:
-		* 
+		* y_list: sign(x) list
+		* data_set_size: size of y_list
+		* tau: percentage of flipping sign function
 	"""
-	pass
+	if tau == 0.0 or tau == 0:
+		return y_list
+	elif tau == 0.1:
+		for i in range(data_set_size):
+			random_number = random.randint(0,9)
+			if random_number == 1:
+				y_list[i] = -y_list[i]
+		return y_list
+
+	else:
+		sys.exit("tau not 0 nor 0.1 returning error")
+
+
+# x = [1,2,3,4,5,6,7]
+# for i in range(len(x)):
+# 	x[i] = -x[i]
+
+# print ("New x = ",x)
