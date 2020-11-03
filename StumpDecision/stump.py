@@ -2,15 +2,6 @@ import numpy as np
 import random
 import sys
 
-# Global Parameters
-train_data_set_size = 2
-tau = 0
-experiment_epoch = 100
-test_data_set_size = 100
-
-# Placeholders
-Eout_minus_Ein = []
-
 
 # Label y from x using sign function
 def label_with_sign(x_list, train_data_set_size):
@@ -19,13 +10,13 @@ def label_with_sign(x_list, train_data_set_size):
 	which is drawn from uniform distribution
 	- Input:
 		* x_list: list of uniform distribution [-1,+1]
-		* data_size: size of x_list
+		* train_data_set_size: size of x_list
 	- Returns:
 		* output_list: a same size list of x with y = sign(x)
 	"""
 	output_list = []
 
-	for i in range(data_size):
+	for i in range(train_data_set_size):
 		if x_list[i] > 0:
 			output_list.append(1)
 		else:
@@ -64,15 +55,15 @@ def find_Ein(train_data_set_size, tau):
 		* theta: s*sign(x-theta), the value for theta
 		* sign_value: s = +1 or -1
 	"""
-	x_Ein = numpy.random.uniform(-1.0,1.0,train_data_set_size)
-	x_Ein = numpy.sort(x_Ein) # O(nlogn)
+	x_Ein = np.random.uniform(-1.0,1.0,train_data_set_size)
+	x_Ein = np.sort(x_Ein) # O(nlogn)
 	threshold_list = [-1]
-	y_list = label_with_sign(x_Ein,train_data_set_size,tau)
+	y_list = label_with_sign(x_Ein,train_data_set_size)
 	y_list = flipping(y_list,train_data_set_size,tau)
 
 	# Append threshold list
 	for i in range(train_data_set_size-1):
-		mid_section = (x[i]+x[i+1])/2
+		mid_section = (x_Ein[i]+x_Ein[i+1])/2
 		threshold_list.append(mid_section)
 
 	# Local Parameters
@@ -86,7 +77,7 @@ def find_Ein(train_data_set_size, tau):
 		positive_Ein = 0.0 # Ein case for setting s = 1
 		negative_Ein = 0.0 # Ein case for setting s = -1
 		for j in range(train_data_set_size):
-			data_correspondence = (x[j] - threshold_list[i]) * y[j]
+			data_correspondence = (x_Ein[j] - threshold_list[i]) * y_list[j]
 			if data_correspondence <= 0:
 				positive_Ein += 1
 			else:
@@ -122,8 +113,8 @@ def find_Eout(test_data_set_size, threshold, sign_value, tau):
 	# Initialize final output
 	final_Eout = 0.0
 
-	x_Eout = numpy.random.uniform(-1.0,1.0,test_data_set_size)
-	y_list = label_with_sign(x_Eout,test_data_set_size,tau)
+	x_Eout = np.random.uniform(-1.0,1.0,test_data_set_size)
+	y_list = label_with_sign(x_Eout,test_data_set_size)
 	y_list = flipping(y_list,test_data_set_size,tau)
 
 	# Loop over data points
@@ -145,15 +136,36 @@ def find_Eout(test_data_set_size, threshold, sign_value, tau):
 
 
 
-def loop_experiment():
+def loop_experiment(test_data_set_size, train_data_set_size, tau, experiment_epoch):
 	"""
 	This is the main function for running the experiment
 	Loop Ein and Eout to find the generalization gap
 	"""
-	pass
+	generalization_gap = 0.0
+
+	for i in range(experiment_epoch):
+		Ein, threshold, sign_value = find_Ein(train_data_set_size, tau)
+		Eout = find_Eout(test_data_set_size, threshold, sign_value, tau)
+		gap = Eout - Ein
+		generalization_gap += gap
+	
+	return generalization_gap / experiment_epoch
 
 
 
+if __name__ == "__main__":
+
+	# Global Parameters
+	train_data_set_size = 2
+	tau = 0
+	experiment_epoch = 100
+	test_data_set_size = 100
+
+	# Placeholders
+	Eout_minus_Ein = []
+
+	result = loop_experiment(test_data_set_size,train_data_set_size,tau,experiment_epoch)
+	print ("Result = ",result)
 
 # x = [1,2,3,4,5,6,7]
 # for i in range(len(x)):
