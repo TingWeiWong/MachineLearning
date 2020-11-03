@@ -74,6 +74,44 @@ def find_Ein(data_set_size, tau):
 		mid_section = (x[i]+x[i+1])/2
 		threshold_list.append(mid_section)
 
+	# Local Parameters
+	final_Ein = float('inf')
+
+	sign_value = 1
+	threshold = 0.0
+
+	# Loop over all possible intervals
+	for i in range(data_set_size):
+		positive_Ein = 0.0 # Ein case for setting s = 1
+		negative_Ein = 0.0 # Ein case for setting s = -1
+		for j in range(data_set_size):
+			data_correspondence = (x[j] - threshold_list[i]) * y[j]
+			if data_correspondence <= 0:
+				positive_Ein += 1
+			else:
+				negative_Ein += 1
+
+		# Normalize Ein 
+		positive_Ein = positive_Ein / data_set_size
+		negative_Ein = negative_Ein / data_set_size
+
+		# Return s = 1 or s = -1
+		if positive_Ein <= negative_Ein:
+			if positive_Ein < final_Ein:
+				threshold = threshold_list[i]
+				final_Ein = positive_Ein
+				sign_value = 1
+
+		else:
+			if negative_Ein < final_Ein:
+				threshold = threshold_list[i]
+				final_Ein = negative_Ein
+				sign_value = -1
+
+	# Return values
+	return final_Ein, threshold, sign_value
+
+
 
 
 # x = [1,2,3,4,5,6,7]
