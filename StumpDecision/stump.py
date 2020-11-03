@@ -156,8 +156,8 @@ def loop_experiment(test_data_set_size, train_data_set_size, tau, experiment_epo
 if __name__ == "__main__":
 
 	# Global Parameters
-	train_data_set_size = 2
-	tau = 0
+	train_data_set_size = 200
+	tau = 0.1
 	experiment_epoch = 100
 	test_data_set_size = 100
 
