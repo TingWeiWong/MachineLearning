@@ -6,6 +6,7 @@ import sys
 data_set_size = 2
 tau = 0
 experiment_epoch = 100
+test_data_set_size = 100
 
 # Placeholders
 Eout_minus_Ein = []
@@ -110,6 +111,46 @@ def find_Ein(data_set_size, tau):
 
 	# Return values
 	return final_Ein, threshold, sign_value
+
+def find_Eout(test_data_set_size, threshold, sign_value, tau):
+	"""
+	This function finds out Eout using the threshold and sign value 
+	sent from the previous function.
+	- Returns:
+		* Eout
+	"""
+	# Initialize final output
+	final_Eout = 0.0
+
+	x_Eout = numpy.random.uniform(-1.0,1.0,test_data_set_size)
+	y_list = label_with_sign(x_Eout,test_data_set_size,tau)
+	y_list = flipping(y_list,test_data_set_size,tau)
+
+	# Loop over data points
+
+	if sign_value == 1:
+		for i in range(test_data_set_size):
+			data_correspondence = (x_Eout[i] - threshold) * y_list[i]
+			if data_correspondence <= 0:
+				final_Eout += 1
+
+	elif sign_value == -1:
+		for i in range(test_data_set_size):
+			data_correspondence = (x_Eout[i] - threshold) * y_list[i]
+			if data_correspondence >= 0:
+				final_Eout += 1
+
+	return final_Eout / test_data_set_size
+
+
+
+
+def loop_experiment():
+	"""
+	This is the main function for running the experiment
+	Loop Ein and Eout to find the generalization gap
+	"""
+	pass
 
 
 
