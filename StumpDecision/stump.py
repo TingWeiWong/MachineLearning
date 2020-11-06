@@ -2,7 +2,6 @@ import numpy as np
 import random
 import sys
 
-
 # Label y from x using sign function
 def label_with_sign(x_list, train_data_set_size):
 	"""
@@ -23,7 +22,7 @@ def label_with_sign(x_list, train_data_set_size):
 			output_list.append(-1)
 
 	return output_list
-
+	
 # Flipping Function
 def flipping(y_list, train_data_set_size, tau):
 	"""
@@ -133,9 +132,6 @@ def find_Eout(test_data_set_size, threshold, sign_value, tau):
 
 	return final_Eout / test_data_set_size
 
-
-
-
 def loop_experiment(test_data_set_size, train_data_set_size, tau, experiment_epoch):
 	"""
 	This is the main function for running the experiment
@@ -150,8 +146,6 @@ def loop_experiment(test_data_set_size, train_data_set_size, tau, experiment_epo
 		generalization_gap += gap
 	
 	return generalization_gap / experiment_epoch
-
-
 
 if __name__ == "__main__":
 
