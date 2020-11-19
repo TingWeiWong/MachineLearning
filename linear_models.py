@@ -30,6 +30,30 @@ def split_data(content_list):
 
 	return x_list, y_list
 
+def non_linear_transform(original_x, max_power):
+	"""
+	This function expands the polynomials to max_power
+	exp. (1,x1,x2,x1^2,x2^2,...,x1^Q,x2^Q)
+	"""
+	data_num = original_x.shape[0]
+	expanded_vector = np.ones((data_num,1)) # Starting from 1
+
+	# Numpy slicing all rows + [1:] columns
+	for i in range(max_power):
+		# The first column are all ones, start from second
+		non_ones_part = original_x[:,1:]
+		powered = np.power(non_ones_part,i+1)
+		expanded_vector = np.concatenate((expanded_vector,powered), axis = 1)
+	return expanded_vector
+
+
+
+	N = x.shape[0]
+	x_new = np.ones((N, 1))
+	for i in range(order):
+		power = np.power(x[:, 1:], i+1)
+		x_new = np.concatenate((x_new, power), axis=1)
+	return x_new
 
 def error_function(x, y, weight, mode):
 	"""
@@ -152,9 +176,16 @@ if __name__ == "__main__":
 	# 	count += SGD_algorithm(train_x_list,train_y_list,mode="logistic",experiment_loop = 500, initial_weight = initial_weight)
 	# result = count / iteration_number
 	# print ("17. Error = ",result)
-	initial_weight = linear_regression(train_x_list,train_y_list)
-	generalization_gap = error_function(train_x_list,train_y_list,initial_weight,mode="zero") - error_function(test_x_list,test_y_list,initial_weight,mode="zero")
+	# initial_weight = linear_regression(train_x_list,train_y_list)
+	# generalization_gap = error_function(train_x_list,train_y_list,initial_weight,mode="zero") - error_function(test_x_list,test_y_list,initial_weight,mode="zero")
+	# print ("generalization_gap = ",generalization_gap)
+	max_power = 10
+	non_linear_x_train = non_linear_transform(train_x_list,max_power)
+	non_linear_x_test = non_linear_transform(test_x_list,max_power)
+	non_linear_weight = linear_regression(non_linear_x_train,train_y_list)
+	generalization_gap = error_function(non_linear_x_train,train_y_list,non_linear_weight,mode="zero") - error_function(non_linear_x_test,test_y_list,non_linear_weight,mode="zero")
 	print ("generalization_gap = ",generalization_gap)
+
 
 	# print ("train_x_list = ",train_x_list)
 	# print ("train_y_list = ",train_y_list)
