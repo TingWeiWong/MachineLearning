@@ -86,6 +86,12 @@ def linear_regression(x, y):
 
 	return optimal_weight
 
+def theta_function(s):
+	"""
+	This function act as a sigmoid function
+	"""
+	return 1 / (1 + np.exp(-s))
+
 
 def SGD_algorithm(x, y, mode, initial_weight = "zero", learning_rate = 1E-3, experiment_loop = 1000, threshold_value = 1.01):
 	"""
@@ -114,7 +120,16 @@ def SGD_algorithm(x, y, mode, initial_weight = "zero", learning_rate = 1E-3, exp
 
 
 	elif mode == "logistic":
-		pass
+		for i in range(experiment_loop):
+			stochastic_value = randint(0,data_num-1)
+			label_product = y[stochastic_value] * x[stochastic_value]
+			# y_n * W^T * x_n
+			exponent = -np.dot(initial_weight, label_product)
+			initial_weight += learning_rate * theta_function(exponent) * label_product	
+
+		# Compute Error
+		cross_entropy_error = error_function(x,y,initial_weight,mode="cross")
+		return cross_entropy_error		
 	else:
 		print ("Mode not supported!")
 		return False
@@ -125,16 +140,21 @@ def SGD_algorithm(x, y, mode, initial_weight = "zero", learning_rate = 1E-3, exp
 if __name__ == "__main__":
 	train_content_list = read_file("hw3_train.dat")
 	train_x_list, train_y_list = split_data(train_content_list)
+	test_contest_list = read_file("hw3_test.dat")
+	test_x_list, test_y_list = split_data(test_contest_list)
 	# optimal_weight = linear_regression(train_x_list,train_y_list)
 	# squared_error = error_function(train_x_list, train_y_list, optimal_weight, mode = "squared")
 	# print ("squared_error for 14 = ",squared_error)
-	iteration_number = 1000
-	count = 0 
-	for i in range(iteration_number):
-		count += SGD_algorithm(train_x_list,train_y_list,mode="linear")
-	result = count / iteration_number
-	print ("result = ",result)
-
+	# iteration_number = 1000
+	# count = 0 
+	# for i in range(iteration_number):
+	# 	initial_weight = linear_regression(train_x_list,train_y_list)
+	# 	count += SGD_algorithm(train_x_list,train_y_list,mode="logistic",experiment_loop = 500, initial_weight = initial_weight)
+	# result = count / iteration_number
+	# print ("17. Error = ",result)
+	initial_weight = linear_regression(train_x_list,train_y_list)
+	generalization_gap = error_function(train_x_list,train_y_list,initial_weight,mode="zero") - error_function(test_x_list,test_y_list,initial_weight,mode="zero")
+	print ("generalization_gap = ",generalization_gap)
 
 	# print ("train_x_list = ",train_x_list)
 	# print ("train_y_list = ",train_y_list)
