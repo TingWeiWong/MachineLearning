@@ -46,15 +46,6 @@ def non_linear_transform(original_x, max_power):
 		expanded_vector = np.concatenate((expanded_vector,powered), axis = 1)
 	return expanded_vector
 
-
-
-	N = x.shape[0]
-	x_new = np.ones((N, 1))
-	for i in range(max_power):
-		power = np.power(x[:, 1:], i+1)
-		x_new = np.concatenate((x_new, power), axis=1)
-	return x_new
-
 def error_function(x, y, weight, mode):
 	"""
 	This function returns Average error measure for different modes
