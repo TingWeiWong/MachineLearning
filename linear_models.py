@@ -41,9 +41,10 @@ def error_function(x, y, weight, mode):
 	"""
 	# All requires W.transpose() X
 
-	weight_X_dot = np.dot(x,w)
+	weight_X_dot = np.dot(x,weight)
 
 	if mode == "zero":
+		# Numpy multiply is an element-wise operation!!!
 		result = np.multiply(y,weight_X_dot) <= 0
 
 	elif mode == "squared":
@@ -86,13 +87,55 @@ def linear_regression(x, y):
 	return optimal_weight
 
 
+def SGD_algorithm(x, y, mode, initial_weight = "zero", learning_rate = 1E-3, experiment_loop = 1000, threshold_value = 1.01):
+	"""
+	This function implements the SGD update for linear regression
+	and logistic regression specified by mode
+	"""
+
+	# Specify initial weight Xw -> shape of w should be x.shape[1] x 1
+	data_num, dimension = x.shape[0], x.shape[1]
+	if initial_weight == "zero":
+		initial_weight = np.zeros(dimension)
+
+	if mode == "linear":
+		w_lin = linear_regression(x, y)
+		Error_upper_bound = threshold_value * error_function(x,y,w_lin,mode="squared")
+		Ein_mean = float("inf")
+		iteration = 0
+		while  Ein_mean > Error_upper_bound:
+			# Generate seed
+			stochastic_value = randint(0,data_num-1)
+			error_vector = y - np.dot(x, initial_weight)
+			initial_weight += 2 * learning_rate * error_vector[stochastic_value] * x[stochastic_value]
+			Ein_mean = np.square(error_vector).mean()
+			iteration += 1
+		return iteration
+
+
+	elif mode == "logistic":
+		pass
+	else:
+		print ("Mode not supported!")
+		return False
 
 
 
 
 if __name__ == "__main__":
 	train_content_list = read_file("hw3_train.dat")
-	train_x_list, train_y_list = split_data(content_list)
+	train_x_list, train_y_list = split_data(train_content_list)
+	# optimal_weight = linear_regression(train_x_list,train_y_list)
+	# squared_error = error_function(train_x_list, train_y_list, optimal_weight, mode = "squared")
+	# print ("squared_error for 14 = ",squared_error)
+	iteration_number = 1000
+	count = 0 
+	for i in range(iteration_number):
+		count += SGD_algorithm(train_x_list,train_y_list,mode="linear")
+	result = count / iteration_number
+	print ("result = ",result)
+
+
 	# print ("train_x_list = ",train_x_list)
 	# print ("train_y_list = ",train_y_list)
 
