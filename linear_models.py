@@ -41,7 +41,7 @@ def error_function(x, y, weight, mode):
 	"""
 	# All requires W.transpose() X
 
-	weight_X_dot = np.dot(w,x)
+	weight_X_dot = np.dot(x,w)
 
 	if mode == "zero":
 		result = np.multiply(y,weight_X_dot) <= 0
@@ -60,7 +60,30 @@ def error_function(x, y, weight, mode):
 	return result.mean()
 
 
+def linear_regression(x, y):
+	"""
+	This function computes the linear regression result 
+	using the pseudo inverse formula.
+	- Input:
+		* x, y
+	- Returns:
+		* W = pseudo inverse of X ...
+	"""
+	x_transpose = x.transpose()
+	symmetric_matrix = np.dot(x_transpose,x)
 
+	# Matrix may be invertible if Positive definite
+	try:
+		inverse_symmetric = np.linalg.inv(symmetric_matrix)
+	except:
+		print ("Matrix not invertible, using pseudo inverse")
+		inverse_symmetric = np.linalg.pinv(symmetric_matrix)
+
+	result_x = np.dot(inverse_symmetric,x_transpose)
+
+	optimal_weight = np.dot(result_x,y)
+
+	return optimal_weight
 
 
 
@@ -68,10 +91,10 @@ def error_function(x, y, weight, mode):
 
 
 if __name__ == "__main__":
-	content_list = read_file("hw3_train.dat")
-	x_list, y_list = split_data(content_list)
-	# print ("x_list = ",x_list)
-	# print ("y_list = ",y_list)
+	train_content_list = read_file("hw3_train.dat")
+	train_x_list, train_y_list = split_data(content_list)
+	# print ("train_x_list = ",train_x_list)
+	# print ("train_y_list = ",train_y_list)
 
 
 
