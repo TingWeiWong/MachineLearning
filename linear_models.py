@@ -50,7 +50,7 @@ def non_linear_transform(original_x, max_power):
 
 	N = x.shape[0]
 	x_new = np.ones((N, 1))
-	for i in range(order):
+	for i in range(max_power):
 		power = np.power(x[:, 1:], i+1)
 		x_new = np.concatenate((x_new, power), axis=1)
 	return x_new
