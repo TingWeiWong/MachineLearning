@@ -1,6 +1,8 @@
 import numpy as np
 import os
 
+D_train_size = 120
+D_val_size = 80
 
 def read_file(file_name):
 	"""
@@ -70,7 +72,7 @@ def non_linear_transform(x_vector):
 	# print ("z_list len = ",len(z_list))
 	return z_list
 
-def write_phi_transform(phi_matrix, file_path, train_y_list):
+def write_phi_transform(phi_matrix, train_file, val_file, train_y_list):
 	"""
 	This file writes back the non linear transform result
 	"""
@@ -79,8 +81,8 @@ def write_phi_transform(phi_matrix, file_path, train_y_list):
 	vector_len = len(phi_matrix[0])
 	# print ("phi_matrix_row = ",len(phi_matrix))
 	# print ("vector_len = ",vector_len)
-	with open(file_path, 'w') as write_file:
-		for i in range(N):
+	with open(train_file, 'w') as write_file:
+		for i in range(D_train_size):
 			if train_y_list[i] == 1:
 				write_file.write("+1 ")
 			else:
@@ -88,17 +90,27 @@ def write_phi_transform(phi_matrix, file_path, train_y_list):
 
 			for j in range(vector_len):
 				write_file.write("{}:{} ".format(j+1,phi_matrix[i][j]))
+			write_file.write("\n")
 
+	with open(val_file, "w") as write_file:
+		for i in range(D_train_size,N):
+			if train_y_list[i] == 1:
+				write_file.write("+1 ")
+			else:
+				write_file.write("-1 ")
+
+			for j in range(vector_len):
+				write_file.write("{}:{} ".format(j+1,phi_matrix[i][j]))
 			write_file.write("\n")
 
 if __name__ == "__main__":
-	train_content_list = read_file("data/hw4_test.dat")
+	train_content_list = read_file("data/hw4_train.dat")
 	train_x_list, train_y_list = split_data(train_content_list)
 	# print ("train_x_list = ",train_x_list[0])
 	# print ("train_y_list = ",train_y_list)
 	phi_result = loop_non_linear(train_x_list)
-	print ("phi_result = ",phi_result[0])
-	write_phi_transform(phi_result,"data/phi_test.dat",train_y_list)
+	# print ("phi_result = ",phi_result[0])
+	write_phi_transform(phi_result,"data/phi_120_train.dat","data/phi_80_val.dat",train_y_list)
 
 
 

@@ -70,7 +70,7 @@ def non_linear_transform(x_vector):
 	# print ("z_list len = ",len(z_list))
 	return z_list
 
-def write_phi_transform(phi_matrix, file_path, train_y_list):
+def write_phi_transform(phi_matrix, train_file, val_file, train_y_list, fold_index, fold_size):
 	"""
 	This file writes back the non linear transform result
 	"""
@@ -79,26 +79,61 @@ def write_phi_transform(phi_matrix, file_path, train_y_list):
 	vector_len = len(phi_matrix[0])
 	# print ("phi_matrix_row = ",len(phi_matrix))
 	# print ("vector_len = ",vector_len)
-	with open(file_path, 'w') as write_file:
-		for i in range(N):
+
+	# Matrix processing 
+	start_fold_index = fold_index * fold_size
+	end_fold_index = start_fold_index + fold_size
+
+
+	with open(train_file, "w") as train_write_file, open(val_file,"w") as val_write_file:
+		# Train file
+		for i in range(start_fold_index):
 			if train_y_list[i] == 1:
-				write_file.write("+1 ")
+				train_write_file.write("+1 ")
 			else:
-				write_file.write("-1 ")
+				train_write_file.write("-1 ")
 
 			for j in range(vector_len):
-				write_file.write("{}:{} ".format(j+1,phi_matrix[i][j]))
+				train_write_file.write("{}:{} ".format(j+1,phi_matrix[i][j]))
+			train_write_file.write("\n")
 
-			write_file.write("\n")
+		# Val file
+		for i in range(start_fold_index,end_fold_index):
+			if train_y_list[i] == 1:
+				val_write_file.write("+1 ")
+			else:
+				val_write_file.write("-1 ")
+
+			for j in range(vector_len):
+				val_write_file.write("{}:{} ".format(j+1,phi_matrix[i][j]))
+
+			val_write_file.write("\n")
+
+		# Train file
+		for i in range(end_fold_index,N):
+			if train_y_list[i] == 1:
+				train_write_file.write("+1 ")
+			else:
+				train_write_file.write("-1 ")
+
+			for j in range(vector_len):
+				train_write_file.write("{}:{} ".format(j+1,phi_matrix[i][j]))
+			train_write_file.write("\n")		
+
 
 if __name__ == "__main__":
-	train_content_list = read_file("data/hw4_test.dat")
+	fold_index = 4
+	fold_size = 40
+	D_train_size = 160
+	train_content_list = read_file("data/hw4_train.dat")
 	train_x_list, train_y_list = split_data(train_content_list)
 	# print ("train_x_list = ",train_x_list[0])
 	# print ("train_y_list = ",train_y_list)
 	phi_result = loop_non_linear(train_x_list)
-	print ("phi_result = ",phi_result[0])
-	write_phi_transform(phi_result,"data/phi_test.dat",train_y_list)
+	# print ("phi_result = ",phi_result[0])
+	train_file = "data/phi_fold{}_train.dat".format(fold_index)
+	val_file = "data/phi_fold{}_val.dat".format(fold_index)
+	write_phi_transform(phi_result,train_file,val_file,train_y_list,fold_index,fold_size)
 
 
 
