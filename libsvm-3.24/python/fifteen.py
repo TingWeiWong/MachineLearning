@@ -23,14 +23,7 @@ for i in range(len(support_vectors)):
 			weight[index] = float(sup_dic[index]) * coef
 		else:
 			weight[index] += float(sup_dic[index]) * coef
-
 ans = 0
-
-print ("weight = ",weight)
-
 for index in weight:
 	ans += weight[index] ** 2
-
 print ("ans = ",ans)
-
-# for i in range()
