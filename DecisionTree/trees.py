@@ -85,10 +85,6 @@ class Criterion:
 		contest_value = example[self.feature]
 		return contest_value >= self.value
 
-	def __repr__(self):
-		condition = ">="
-		return "Is %s %s %s?" % (
-			header[self.feature], condition, str(self.value))
 
 def partition(training_data, criterion):
 	"""
@@ -173,12 +169,12 @@ class RecursiveNode:
 	This is the recursive Node, holding two children and its criterion.
 	"""
 
-	def __init__(self,criterion,true_branch,false_branch):
+	def __init__(self,criterion,left_side,right_side):
 		self.criterion = criterion
-		self.true_branch = true_branch
-		self.false_branch = false_branch
+		self.left_side = left_side
+		self.right_side = right_side
 
-def build_tree(input_data):
+def Construction(input_data):
 	"""
 	This is the function for constructing the tree.
 	- Input:
@@ -191,33 +187,30 @@ def build_tree(input_data):
 
 	left_child, right_child = partition(input_data, criterion)
 
-	true_branch = build_tree(left_child)
-	false_branch = build_tree(right_child)
+	left_side = Construction(left_child)
+	right_side = Construction(right_child)
 
-	return RecursiveNode(criterion, true_branch, false_branch)
+	return RecursiveNode(criterion, left_side, right_side)
 
 
 
-def classify(row, node):
-	"""See the 'rules of recursion' above."""
-
-	# Base case: we've reached a leaf
+def Sort_data(single_data, node):
+	"""
+	This function classifies the single_data after 
+	passing through the criterion.
+	"""
 	if isinstance(node, BaseNode):
 		return node.predictions
 
-	# Decide whether to follow the true-branch or the false-branch.
-	# Compare the feature / value stored in the node,
-	# to the example we're considering.
-	if node.criterion.match(row):
-		return classify(row, node.true_branch)
+	if node.criterion.match(single_data):
+		return Sort_data(single_data, node.left_side)
 	else:
-		return classify(row, node.false_branch)
+		return Sort_data(single_data, node.right_side)
 
-def print_leaf(counts):
-	"""A nicer way to print the predictions at a leaf."""
+def get_label(counts):
 	for label in counts.keys():
-		probs = label
-	return probs
+		result = label
+	return result
 
 
 
@@ -250,12 +243,12 @@ if __name__ == "__main__":
 	header = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
 	a = Criterion(1, 3)
 	print (a)
-	my_tree = build_tree(training_data)
+	my_tree = Construction(training_data)
 
 	wrong_count = 0
 	for row in testing_data:
 		actual = row[-1]
-		predicted = print_leaf(classify(row, my_tree))
+		predicted = get_label(Sort_data(row, my_tree))
 		# print ("predicted = ",predicted)
 		# print ("Actual: %s. Predicted: %s" % (actual, predicted))
 		if (actual != predicted):
