@@ -1,4 +1,5 @@
 # Reference: Google Machine Learning Recipe 
+import time 
 
 def load_data(data_path):
 	"""
@@ -241,9 +242,11 @@ if __name__ == "__main__":
 
 	counts = analyze_class(training_data)
 	header = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
-	a = Criterion(1, 3)
-	print (a)
+	# a = Criterion(1, 3)
+	# print (a)
+	start_time = time.time()
 	my_tree = Construction(training_data)
+	print("--- %s seconds ---" % (time.time() - start_time))
 
 	wrong_count = 0
 	for row in testing_data:
