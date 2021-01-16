@@ -1,7 +1,7 @@
 from trees import *
 import random 
 
-forest_number = 100
+forest_number = 20
 replacement = 500
 
 forest = [0] * forest_number
