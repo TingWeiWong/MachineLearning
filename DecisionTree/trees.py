@@ -181,15 +181,22 @@ def Construction(input_data):
 	- Input:
 		* input_data
 	"""
+
+	start_time = time.time()
 	gain, criterion = find_best_split(input_data)
+	print("--- %s seconds for find_best_split---" % (time.time() - start_time))	
 
 	if gain == 0:
 		return BaseNode(input_data)
 
+	start_time = time.time()
 	left_child, right_child = partition(input_data, criterion)
+	print("--- %s seconds for partition---" % (time.time() - start_time))	
 
+	start_time = time.time()	
 	left_side = Construction(left_child)
 	right_side = Construction(right_child)
+	print("--- %s seconds for Recursive calls---" % (time.time() - start_time))	
 
 	return RecursiveNode(criterion, left_side, right_side)
 
@@ -246,7 +253,7 @@ if __name__ == "__main__":
 	# print (a)
 	start_time = time.time()
 	my_tree = Construction(training_data)
-	print("--- %s seconds ---" % (time.time() - start_time))
+	print("--- %s seconds for building tree---" % (time.time() - start_time))
 
 	wrong_count = 0
 	for row in testing_data:
