@@ -27,7 +27,7 @@ for i in range(len(training_data)):
 	for j in range(forest_number):
 		if contacted[i][j] == False:
 			temp += 1
-			if (training_data[i][-1] != get_label(Sort_data(testing_data[i], forest[j]))):
+			if (training_data[i][-1] != get_label(Sort_data(training_data[i], forest[j]))):
 				error += 1
 
 print (float(error) / temp)
