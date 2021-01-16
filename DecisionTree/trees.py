@@ -21,77 +21,91 @@ def load_data(data_path):
 
 	return content_list
 	
-def class_counts(training_data):
-	"""Counts the number of each type of example in a dataset."""
-	counts = {}  # a dictionary of label -> count.
+def analyze_class(training_data):
+	"""
+	Counts the number unique examples in a dataset.
+	This is used to balance the gini_index
+	- Output:
+		* counts: dictionary with key = 1.0 or -1.0, 
+				  values = accumulative counts
+	"""
+	counts = {}
 	for row in training_data:
-		# in our dataset format, the label is always the last column
 		label = row[-1]
 		if label not in counts:
 			counts[label] = 0
 		counts[label] += 1
 	return counts
 
-def gini(rows):
+def compute_impurity(training_data):
 	"""
-	Calculate the Gini Impurity for a list of rows.
+	Calculate the Gini Impurity.
+	1 - Sigma((label) / N)
 	"""
-	counts = class_counts(rows)
+	counts = analyze_class(training_data)
+	data_num = len(training_data)
 	impurity = 1
-	for lbl in counts:
-		prob_of_lbl = counts[lbl] / float(len(rows))
-		impurity -= prob_of_lbl**2
+
+	for label in counts:
+		prob_of_label = counts[label] / float(data_num)
+		impurity -= prob_of_label**2
+	
 	return impurity
 
-def info_gain(left, right, current_uncertainty):
-	"""Information Gain.
-
-	The uncertainty of the starting node, minus the weighted impurity of
-	two child nodes.
+def gain_difference(left, right, root_impurity):
 	"""
-	p = float(len(left)) / (len(left) + len(right))
-	return current_uncertainty - p * gini(left) - (1 - p) * gini(right)
-
-class Question:
-	"""A Question is used to partition a dataset.
-
-	This class just records a 'column number' (e.g., 0 for Color) and a
-	'column value' (e.g., Green). The 'match' method is used to compare
-	the feature value in an example to the feature value stored in the
-	question. See the demo below.
+	This function calculates the information gain difference by
+	balancing left child and right child 
+	- Input:
+		* left, right : children
+		* root_impurity
 	"""
+	balancing_factor = float(len(left)) / (len(left) + len(right))
+	updated_impurity = root_impurity - balancing_factor * compute_impurity(left) - (1 - balancing_factor) * compute_impurity(right)
+	
+	return updated_impurity
 
+class Criterion:
+	"""
+	This class holds a checking creterion for 
+	using a specific threshold and column(feature)
+	- Input:
+		* feature: column name or index
+		* value: threshold for comparison
+
+	- Function:
+		* match: check if the contesting data matches with this 
+			criterion.
+	"""
 	def __init__(self, feature, value):
 		self.feature = feature
 		self.value = value
 
 	def match(self, example):
-		# Compare the feature value in an example to the
-		# feature value in this question.
-		val = example[self.feature]
-		return val >= self.value
+		contest_value = example[self.feature]
+		return contest_value >= self.value
 
 	def __repr__(self):
-		# This is just a helper method to print
-		# the question in a readable format.
-
 		condition = ">="
 		return "Is %s %s %s?" % (
 			header[self.feature], condition, str(self.value))
 
-def partition(rows, question):
-	"""Partitions a dataset.
-
-	For each row in the dataset, check if it matches the question. If
-	so, add it to 'true rows', otherwise, add it to 'false rows'.
+def partition(training_data, criterion):
 	"""
-	true_rows, false_rows = [], []
-	for row in rows:
-		if question.match(row):
-			true_rows.append(row)
+	This function splits the dataset into true and false
+	lists with .
+	- Input:
+		* training_data
+		* criterion: checking if the result should match
+	"""
+	left_child, right_child = [], []
+	for row in training_data:
+		if criterion.match(row):
+			# print ("Left child matches!")
+			left_child.append(row)
 		else:
-			false_rows.append(row)
-	return true_rows, false_rows
+			right_child.append(row)
+	return left_child, right_child
 
 
 def stump_values(raw_values_set):
@@ -114,158 +128,127 @@ def stump_values(raw_values_set):
 
 	return decision_list
 
+def find_best_split(input_data):
+	"""
+	This function finds the best criterion to hold given datasets
+	- Input:
+		* input_data: rows of input data
+	"""
+	best_gain, best_criterion = 0, None
+	root_impurity = compute_impurity(input_data)
+	column_number = len(input_data[0]) - 1
 
+	for col in range(column_number):
 
-
-def find_best_split(rows):
-	"""Find the best question to ask by iterating over every feature / value
-	and calculating the information gain."""
-	best_gain = 0  # keep track of the best information gain
-	best_question = None  # keep train of the feature / value that produced it
-	current_uncertainty = gini(rows)
-	n_features = len(rows[0]) - 1  # number of columns
-
-	for col in range(n_features):  # for each feature
-
-		values = set([row[col] for row in rows])  # unique values in the column
+		values = set([row[col] for row in input_data])
 
 		decision_list = stump_values(values)
 
-		for val in decision_list:  # for each value
+		for val in decision_list:
+			criterion = Criterion(col, val)
+			left_child, right_child = partition(input_data, criterion)
 
-			question = Question(col, val)
-
-			# try splitting the dataset
-			true_rows, false_rows = partition(rows, question)
-
-			# Skip this split if it doesn't divide the
-			# dataset.
-			if len(true_rows) == 0 or len(false_rows) == 0:
+			if len(left_child) == 0 or len(right_child) == 0:
 				continue
 
-			# Calculate the information gain from this split
-			gain = info_gain(true_rows, false_rows, current_uncertainty)
-
-			# You actually can use '>' instead of '>=' here
-			# but I wanted the tree to look a certain way for our
-			# toy dataset.
+			gain = gain_difference(left_child, right_child, root_impurity)
 			if gain >= best_gain:
-				best_gain, best_question = gain, question
+				best_gain, best_criterion = gain, criterion
 
-	return best_gain, best_question
+	return best_gain, best_criterion
 
-class Leaf:
-	"""A Leaf node classifies data.
-
-	This holds a dictionary of class (e.g., "Apple") -> number of times
-	it appears in the rows from the training data that reach this leaf.
+class BaseNode:
 	"""
-
+	A BaseNode node classifies data.
+	This basenode holds a dictionary of the feature that the number of times 
+	it reaches this node.
+	"""
 	def __init__(self, rows):
-		self.predictions = class_counts(rows)
+		self.predictions = analyze_class(rows)
 
 
-class Decision_Node:
-	"""A Decision Node asks a question.
-
-	This holds a reference to the question, and to the two child nodes.
+class RecursiveNode:
+	"""
+	A Decision Node asks a criterion.
+	This is the recursive Node, holding two children and its criterion.
 	"""
 
-	def __init__(self,
-				 question,
-				 true_branch,
-				 false_branch):
-		self.question = question
+	def __init__(self,criterion,true_branch,false_branch):
+		self.criterion = criterion
 		self.true_branch = true_branch
 		self.false_branch = false_branch
 
-def build_tree(rows):
-	"""Builds the tree.
-
-	Rules of recursion: 1) Believe that it works. 2) Start by checking
-	for the base case (no further information gain). 3) Prepare for
-	giant stack traces.
+def build_tree(input_data):
 	"""
+	This is the function for constructing the tree.
+	- Input:
+		* input_data
+	"""
+	gain, criterion = find_best_split(input_data)
 
-	# Try partitioing the dataset on each of the unique attribute,
-	# calculate the information gain,
-	# and return the question that produces the highest gain.
-	gain, question = find_best_split(rows)
-
-	# Base case: no further info gain
-	# Since we can ask no further questions,
-	# we'll return a leaf.
 	if gain == 0:
-		return Leaf(rows)
+		return BaseNode(input_data)
 
-	# If we reach here, we have found a useful feature / value
-	# to partition on.
-	true_rows, false_rows = partition(rows, question)
+	left_child, right_child = partition(input_data, criterion)
 
-	# Recursively build the true branch.
-	true_branch = build_tree(true_rows)
+	true_branch = build_tree(left_child)
+	false_branch = build_tree(right_child)
 
-	# Recursively build the false branch.
-	false_branch = build_tree(false_rows)
+	return RecursiveNode(criterion, true_branch, false_branch)
 
-	# Return a Question node.
-	# This records the best feature / value to ask at this point,
-	# as well as the branches to follow
-	# dependingo on the answer.
-	return Decision_Node(question, true_branch, false_branch)
-	
-def print_tree(node, spacing=""):
-	"""World's most elegant tree printing function."""
-
-	# Base case: we've reached a leaf
-	if isinstance(node, Leaf):
-		print (spacing + "Predict", node.predictions)
-		return
-
-	# Print the question at this node
-	print (spacing + str(node.question))
-
-	# Call this function recursively on the true branch
-	print (spacing + '--> True:')
-	print_tree(node.true_branch, spacing + "  ")
-
-	# Call this function recursively on the false branch
-	print (spacing + '--> False:')
-	print_tree(node.false_branch, spacing + "  ")
 
 
 def classify(row, node):
 	"""See the 'rules of recursion' above."""
 
 	# Base case: we've reached a leaf
-	if isinstance(node, Leaf):
+	if isinstance(node, BaseNode):
 		return node.predictions
 
 	# Decide whether to follow the true-branch or the false-branch.
 	# Compare the feature / value stored in the node,
 	# to the example we're considering.
-	if node.question.match(row):
+	if node.criterion.match(row):
 		return classify(row, node.true_branch)
 	else:
 		return classify(row, node.false_branch)
 
 def print_leaf(counts):
 	"""A nicer way to print the predictions at a leaf."""
-	total = sum(counts.values()) * 1.0
-	probs = {}
-	for lbl in counts.keys():
-		probs = lbl
+	for label in counts.keys():
+		probs = label
 	return probs
 
 
 
 
 if __name__ == "__main__":
-	training_data = load_data("data/hw6_train.dat")
-	testing_data = load_data("data/hw6_test.dat")
-	counts = class_counts(training_data)
+
+	mode = 0
+
+	if mode == 0:
+		training_data = load_data("data/hw6_train.dat")
+		testing_data = load_data("data/hw6_test.dat")
+	else:
+		training_data = [
+			[1.02, 3, 1.0],
+			[0.529, 3, 1.0],
+			[0.827, 1, -1.0],
+			[0.827, 1, -1.0],
+			[0.529, 3, 1.0],
+		]
+
+		testing_data = [
+			[1.02, 3, 1.0],
+			[0.529, 4, 1.0],
+			[0.827, 2, -1.0],
+			[0.827, 1, -1.0],
+			[0.529, 3, 1.0],
+		]
+
+	counts = analyze_class(training_data)
 	header = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
-	a = Question(1, 3)
+	a = Criterion(1, 3)
 	print (a)
 	my_tree = build_tree(training_data)
 
