@@ -24,6 +24,12 @@ for i in range(1000):
 	if contacted[i] == False:
 		oob_data_list.append(training_data[i])
 
+if oob_data_list == []:
+	mode = 0
+else:
+	mode = 1
+
+print ("oob_data_list = ",oob_data_list)
 
 
 y_list = []
@@ -38,9 +44,13 @@ for i in range(len(oob_data_list)):
 		y_list.append(-1.0)
 
 error = 0
-for j in range(len(oob_data_list)):
-	if (oob_data_list[j][-1] != y_list[j]):
-		error += 1
+if mode == 1:
+	for j in range(len(oob_data_list)):
+		if (oob_data_list[j][-1] != y_list[j]):
+			error += 1
+else:
+	print ("Empty")
+
 
 error = error / (1000)
 print ("error = ",error)
