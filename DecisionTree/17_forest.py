@@ -17,10 +17,10 @@ for i in range(forest_number):
 	forest[i] = Construction(x_random)
 
 y_list = []
-for i in range(len(training_data)):
+for i in range(len(testing_data)):
 	temp = 0
 	for j in range(forest_number):
-		temp += get_label(Sort_data(training_data[i], forest[j]))
+		temp += get_label(Sort_data(testing_data[i], forest[j]))
 
 	if (temp >= 0):
 		y_list.append(1.0)
@@ -28,13 +28,12 @@ for i in range(len(training_data)):
 		y_list.append(-1.0)
 
 error = 0
-for j in range(len(training_data)):
-	if (training_data[j][-1] != y_list[j]):
+for j in range(len(testing_data)):
+	if (testing_data[j][-1] != y_list[j]):
 		error += 1
 
 error = error / (1000)
 print ("error = ",error)
-
 
 
 
